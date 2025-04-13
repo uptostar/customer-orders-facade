@@ -1,4 +1,7 @@
-﻿using CustomerOrders.Facades.Interfaces;
+﻿using System.Net;
+using System.Text.Json;
+using CustomerOrders.Common.Exceptions;
+using CustomerOrders.Facades.Interfaces;
 using CustomerOrders.Models.External.Customer;
 
 namespace CustomerOrders.Services;
@@ -9,12 +12,13 @@ namespace CustomerOrders.Services;
 /// </summary>
 public class CustomerService : ICustomerService
 {
-    private const string ServiceUrl = "http://localhost:5002";
+    private readonly string _serviceName;
     private readonly HttpClient _client;
     
-    public CustomerService()
+    public CustomerService(HttpClient client)
     {
-        _client = new HttpClient { BaseAddress = new Uri(ServiceUrl) };
+        _client = client;
+        _serviceName = "CustomerService";
     }
 
     /// <inheritdoc />
@@ -24,8 +28,7 @@ public class CustomerService : ICustomerService
 
         if (!response.IsSuccessStatusCode)
         {
-            //TODO: Добавить свои ошибки
-            return null;
+            await HandleErrorResponse(response);
         }
             
         var customers = await response.Content.ReadFromJsonAsync<List<CustomerDto>>();
@@ -40,16 +43,14 @@ public class CustomerService : ICustomerService
 
         if (!response.IsSuccessStatusCode)
         {
-            //TODO: Добавить свои ошибки
-            var errorContent = await response.Content.ReadAsStringAsync();
-            throw new ApplicationException($"Failed to get customer. Status code: {response.StatusCode}, Message: {errorContent}");
+            await HandleErrorResponse(response);
         }
         
         var customer = await response.Content.ReadFromJsonAsync<CustomerDto>();
         
         if (customer == null)
         {
-            throw new ApplicationException("Customer data is null or invalid.");
+            throw new NotFoundException($"Customer with ID: {id} not found.");
         }
         
         return customer;
@@ -62,13 +63,40 @@ public class CustomerService : ICustomerService
 
         if (!response.IsSuccessStatusCode)
         {
-            //TODO: Добавить свои ошибки
-            var errorContent = await response.Content.ReadAsStringAsync();
-            throw new ApplicationException($"Failed to get customers. Status code: {response.StatusCode}, Message: {errorContent}");
+            await HandleErrorResponse(response);
         }
         
         var customers = await response.Content.ReadFromJsonAsync<List<CustomerDto>>();
         
         return customers ?? [];
+    }
+    
+    private async Task HandleErrorResponse(HttpResponseMessage response)
+    {
+        var content = await response.Content.ReadAsStringAsync();
+
+        object errorData = null;
+        try
+        {
+            errorData = JsonSerializer.Deserialize<JsonElement>(content);
+        }
+        catch { }
+
+        throw response.StatusCode switch
+        {
+            HttpStatusCode.BadRequest => new ExternalServiceApiException(
+                _serviceName, "Invalid request", response.StatusCode, errorData),
+                
+            HttpStatusCode.Unauthorized => new ExternalServiceApiException(
+                _serviceName, "Authentication failed", response.StatusCode),
+                
+            HttpStatusCode.ServiceUnavailable => new ExternalServiceUnavailableException(
+                _serviceName, "Service temporarily unavailable", response.StatusCode,
+                response.Headers.RetryAfter?.Delta),
+                
+            _ => new ExternalServiceApiException(
+                _serviceName, $"Unexpected error: {response.StatusCode}", 
+                response.StatusCode, errorData)
+        };
     }
 }

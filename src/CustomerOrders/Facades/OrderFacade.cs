@@ -4,6 +4,14 @@ using CustomerOrders.Models.External.Order;
 
 namespace CustomerOrders.Facades;
 
+
+public class OrderCustomerDto
+{
+    public long Id { get; set; }
+    public string FullName { get; set; }
+    public List<OrderDto> Orders { get; set; }
+}
+
 public class OrderFacade : IOrderFacade
 {
     private readonly ICustomerService _customerService;
@@ -15,26 +23,19 @@ public class OrderFacade : IOrderFacade
         _customerService = customerService;
     }
     
-    public async Task<List<OrderDto>> GetOrderListByCustomerId(long customerId, long limit, long offset)
+    public async Task<OrderCustomerDto> GetOrderListByCustomerId(long customerId, long limit, long offset)
     {
-        var customers = _customerService.GetCustomerListByRegionId(customerId);
+        var customer = _customerService.GetById(customerId);
         var orders = _orderService.GetOrderListByCustomerId(customerId, limit, offset);
         
-        await Task.WhenAll(customers, orders);
+        await Task.WhenAll(customer, orders);
         
-        if (customers.Result is null)
+        return new OrderCustomerDto
         {
-            throw new Exception();
-        }
-
-        if (orders.Result is null)
-        {
-            throw new Exception();
-        }
-        
-        
-        
-        return [];
+            Id = customer.Result.Id,
+            FullName = customer.Result.FullName,
+            Orders = orders.Result
+        };
     }
 
     public Task<List<OrderDto>> GetOrderListByRegionId(long regionId, long limit, long offset)

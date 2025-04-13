@@ -9,8 +9,17 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddExternalServices(this IServiceCollection services)
     {
-        services.AddScoped<IOrderService, OrderService>();
-        services.AddScoped<ICustomerService, CustomerService>();
+        services.AddHttpClient<IOrderService, OrderService>("OrderService", client =>
+        {
+            client.BaseAddress = new Uri("http://localhost:5003");
+            client.Timeout = TimeSpan.FromSeconds(30);
+        });
+        
+        services.AddHttpClient<ICustomerService, CustomerService>("CustomerService", client =>
+        {
+            client.BaseAddress = new Uri("http://localhost:5002");
+            client.Timeout = TimeSpan.FromSeconds(30);
+        });
 
         return services;
     }

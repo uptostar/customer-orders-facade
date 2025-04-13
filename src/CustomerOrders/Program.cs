@@ -1,14 +1,16 @@
 using System.Text.Json.Serialization;
 using CustomerOrders.Common.Extensions;
-using CustomerOrders.Controllers.Interfaces;
-using CustomerOrders.Facades.Interfaces;
-using CustomerOrders.Facades;
+using CustomerOrders.Common.Filters;
 using CustomerOrders.Middlewares;
-using CustomerOrders.Services;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers().AddJsonOptions(option =>
+builder.Services.AddControllers(option =>
+{
+   option.Filters.Add<ExternalServiceExceptionFilter>();
+   option.Filters.Add<GlobalExceptionFilter>();
+}).AddJsonOptions(option =>
 {
    option.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });

@@ -27,7 +27,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Common\Filters\" />
       <Folder Include="Models\Internal\Order\" />
     </ItemGroup>
 

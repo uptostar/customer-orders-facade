@@ -1,4 +1,5 @@
 ﻿using CustomerOrders.Controllers.Interfaces;
+using CustomerOrders.Facades;
 using CustomerOrders.Models.External.Order;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,6 +27,8 @@ public class OrdersController(IOrderFacade orderFacade) : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult GetOrderListByRegionId(long regionId, [FromQuery] long offset = 0, [FromQuery] long limit = 15)
     {
+        _orderFacade.GetOrderListByRegionId(regionId, limit, offset);
+        
         return Ok($"Hello World! RegionID: {regionId}, take: {limit}, skip: {offset}");
     }
 
@@ -37,13 +40,9 @@ public class OrdersController(IOrderFacade orderFacade) : ControllerBase
     /// <param name="limit"></param>
     /// <returns></returns>
     [HttpGet("/customer/{customerId:long}")]
-    
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<List<OrderDto>>> GetOrderListByCustomerId(long customerId, [FromQuery] long offset = 0, [FromQuery] long limit = 15)
-    {
-        var orders = await _orderFacade.GetOrderListByCustomerId(customerId, offset, limit);
-        
-        return Ok($"Hello World! RegionID: {customerId}, take: {limit}");
-    }
+    public async Task<OrderCustomerDto> GetOrderListByCustomerId(long customerId,
+        [FromQuery] long offset = 0, [FromQuery] long limit = 15) =>
+        await _orderFacade.GetOrderListByCustomerId(customerId, limit, offset);
 }
