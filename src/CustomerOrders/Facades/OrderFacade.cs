@@ -1,5 +1,4 @@
 ﻿using CustomerOrders.Controllers.Interfaces;
-using CustomerOrders.Models.External.Order;
 using CustomerOrders.Services.Customer.Contracts;
 using CustomerOrders.Services.Customer.Contracts.Requests;
 using CustomerOrders.Services.Order.Contracts;
@@ -11,7 +10,7 @@ public class OrderCustomerDto
 {
     public long Id { get; set; }
     public string FullName { get; set; }
-    public List<OrderDto> Orders { get; set; }
+    public List<int> Orders { get; set; }
 }
 
 public class OrderFacade : IOrderFacade
@@ -40,7 +39,7 @@ public class OrderFacade : IOrderFacade
         };
     }
 
-    public Task<List<OrderDto>> GetOrderListByRegionId(long regionId, long limit, long offset)
+    public Task<List<int>> GetOrderListByRegionId(long regionId, long limit, long offset)
     {
         throw new NotImplementedException();
     }
