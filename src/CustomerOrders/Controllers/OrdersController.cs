@@ -13,8 +13,6 @@ namespace CustomerOrders.Controllers;
 [Route("api/[controller]")]
 public class OrdersController(IOrderFacade orderFacade) : ControllerBase
 {
-    private readonly IOrderFacade _orderFacade = orderFacade;
-
     /// <summary>
     /// 
     /// </summary>
@@ -25,11 +23,12 @@ public class OrdersController(IOrderFacade orderFacade) : ControllerBase
     [HttpGet("/region/{regionId:long}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult GetOrderListByRegionId(long regionId, [FromQuery] long offset = 0, [FromQuery] long limit = 15)
+    public string GetOrderListByRegionId(
+        long regionId, [FromQuery] long offset = 0, [FromQuery] long limit = 15)
     {
-        _orderFacade.GetOrderListByRegionId(regionId, limit, offset);
+        orderFacade.GetOrderListByRegionId(regionId, limit, offset);
         
-        return Ok($"Hello World! RegionID: {regionId}, take: {limit}, skip: {offset}");
+        return $"Hello World! RegionID: {regionId}, take: {limit}, skip: {offset}";
     }
 
     /// <summary>
@@ -42,7 +41,7 @@ public class OrdersController(IOrderFacade orderFacade) : ControllerBase
     [HttpGet("/customer/{customerId:long}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<OrderCustomerDto> GetOrderListByCustomerId(long customerId,
-        [FromQuery] long offset = 0, [FromQuery] long limit = 15) =>
-        await _orderFacade.GetOrderListByCustomerId(customerId, limit, offset);
+    public async Task<OrderCustomerDto> GetOrderListByCustomerId(
+        long customerId, [FromQuery] long offset = 0, [FromQuery] long limit = 15) =>
+        await orderFacade.GetOrderListByCustomerId(customerId, limit, offset);
 }

@@ -1,24 +1,36 @@
 ﻿using CustomerOrders.Controllers.Interfaces;
 using CustomerOrders.Facades;
-using CustomerOrders.Facades.Interfaces;
-using CustomerOrders.Services;
+using CustomerOrders.Services.Customer.Client;
+using CustomerOrders.Services.Customer.Contracts;
+using CustomerOrders.Services.Customer.Models.Config;
+using CustomerOrders.Services.Order.Client;
+using CustomerOrders.Services.Order.Contracts;
+using CustomerOrders.Services.Order.Models.Config;
+using Microsoft.Extensions.Options;
 
 namespace CustomerOrders.Common.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddExternalServices(this IServiceCollection services)
+    public static IServiceCollection AddExternalServices(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddHttpClient<IOrderService, OrderService>("OrderService", client =>
+        services.Configure<CustomerServiceConfig>(configuration.GetSection("Services:Customer"));
+        services.Configure<OrderServiceConfig>(configuration.GetSection("Services:Order"));
+        
+        services.AddHttpClient<IOrderServiceClient, OrderServiceClient>((provider, client) =>
         {
-            client.BaseAddress = new Uri("http://localhost:5003");
-            client.Timeout = TimeSpan.FromSeconds(30);
+            var config = provider.GetRequiredService<IOptions<OrderServiceConfig>>().Value;
+            
+            client.BaseAddress = config.GetUri();
+            client.Timeout = TimeSpan.FromSeconds(config.Timeout);
         });
         
-        services.AddHttpClient<ICustomerService, CustomerService>("CustomerService", client =>
+        services.AddHttpClient<ICustomerServiceClient, CustomerServiceClient>((provider, client) =>
         {
-            client.BaseAddress = new Uri("http://localhost:5002");
-            client.Timeout = TimeSpan.FromSeconds(30);
+            var config = provider.GetRequiredService<IOptions<CustomerServiceConfig>>().Value;
+            
+            client.BaseAddress = config.GetUri();
+            client.Timeout = TimeSpan.FromSeconds(config.Timeout);
         });
 
         return services;

@@ -1,6 +1,8 @@
 ﻿using CustomerOrders.Controllers.Interfaces;
-using CustomerOrders.Facades.Interfaces;
 using CustomerOrders.Models.External.Order;
+using CustomerOrders.Services.Customer.Contracts;
+using CustomerOrders.Services.Customer.Contracts.Requests;
+using CustomerOrders.Services.Order.Contracts;
 
 namespace CustomerOrders.Facades;
 
@@ -14,27 +16,27 @@ public class OrderCustomerDto
 
 public class OrderFacade : IOrderFacade
 {
-    private readonly ICustomerService _customerService;
-    private readonly IOrderService _orderService;
+    private readonly ICustomerServiceClient _customerServiceClient;
+    private readonly IOrderServiceClient _orderServiceClient;
     
-    public OrderFacade(IOrderService orderService, ICustomerService customerService)
+    public OrderFacade(ICustomerServiceClient customerServiceClient, IOrderServiceClient orderServiceClient)
     {
-        _orderService = orderService;
-        _customerService = customerService;
+        _customerServiceClient = customerServiceClient;
+        _orderServiceClient = orderServiceClient;
     }
     
     public async Task<OrderCustomerDto> GetOrderListByCustomerId(long customerId, long limit, long offset)
     {
-        var customer = _customerService.GetById(customerId);
-        var orders = _orderService.GetOrderListByCustomerId(customerId, limit, offset);
+        var customer = await _customerServiceClient.GetCustomerByIdAsync(new GetCustomerByIdRequest { Id = customerId });
+        // var orders = _orderService.GetOrderListByCustomerId(customerId, limit, offset);
         
-        await Task.WhenAll(customer, orders);
+        // await Task.WhenAll(customer, orders);
         
         return new OrderCustomerDto
         {
-            Id = customer.Result.Id,
-            FullName = customer.Result.FullName,
-            Orders = orders.Result
+            Id = customer.Id,
+            FullName = customer.FullName,
+            Orders = []
         };
     }
 

@@ -15,7 +15,6 @@ builder.Services.AddControllers(option =>
    option.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
-builder.Services.AddHttpClient();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHealthChecks();
 
@@ -26,7 +25,7 @@ builder.Services.AddRouting(options =>
    options.AppendTrailingSlash = true;
 });
 
-builder.Services.AddExternalServices();
+builder.Services.AddExternalServices(builder.Configuration);
 builder.Services.AddInternalServices();
 
 var app = builder.Build();
