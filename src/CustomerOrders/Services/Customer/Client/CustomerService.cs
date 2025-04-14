@@ -9,16 +9,16 @@ namespace CustomerOrders.Services.Customer.Client;
 /// Реализация клиента для взаимодействия с сервисом клиентов.
 /// </summary>
 /// <remarks>
-/// Этот класс реализует интерфейс <see cref="ICustomerServiceClient"/> и предоставляет методы
+/// Этот класс реализует интерфейс <see cref="ICustomerService"/> и предоставляет методы
 /// для получения информации о клиентах через HTTP-запросы.
 /// Класс использует <see cref="HttpClient"/> для выполнения запросов к внешнему API.
 /// </remarks>
-public class CustomerServiceClient : ICustomerServiceClient
+public class CustomerService : ICustomerService
 {
     private readonly HttpClient _httpClient;
 
     /// <summary>
-    /// Инициализирует новый экземпляр класса <see cref="CustomerServiceClient"/>.
+    /// Инициализирует новый экземпляр класса <see cref="CustomerService"/>.
     /// </summary>
     /// <param name="httpClient">
     /// Экземпляр <see cref="HttpClient"/>, который используется для выполнения HTTP-запросов к внешнему API.
@@ -27,7 +27,7 @@ public class CustomerServiceClient : ICustomerServiceClient
     /// <remarks>
     /// Этот конструктор внедряет зависимость <see cref="HttpClient"/> через Dependency Injection (DI).
     /// </remarks>
-    public CustomerServiceClient(HttpClient httpClient)
+    public CustomerService(HttpClient httpClient)
     {
         _httpClient = httpClient;
     }

@@ -7,7 +7,7 @@ namespace CustomerOrders.Services.Order.Contracts;
 /// Интерфейс для взаимодействия с сервисом заказов.
 /// Предоставляет методы для получения списка заказов по различным критериям.
 /// </summary>
-public interface IOrderServiceClient
+public interface IOrderService
 {
     /// <summary>
     /// Получение списка заказов по идентификатору региона.

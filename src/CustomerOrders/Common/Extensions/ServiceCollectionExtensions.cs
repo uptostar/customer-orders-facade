@@ -17,7 +17,7 @@ public static class ServiceCollectionExtensions
         services.Configure<CustomerServiceConfig>(configuration.GetSection("Services:Customer"));
         services.Configure<OrderServiceConfig>(configuration.GetSection("Services:Order"));
         
-        services.AddHttpClient<IOrderServiceClient, OrderServiceClient>((provider, client) =>
+        services.AddHttpClient<IOrderService, OrderService>((provider, client) =>
         {
             var config = provider.GetRequiredService<IOptions<OrderServiceConfig>>().Value;
             
@@ -25,7 +25,7 @@ public static class ServiceCollectionExtensions
             client.Timeout = TimeSpan.FromSeconds(config.Timeout);
         });
         
-        services.AddHttpClient<ICustomerServiceClient, CustomerServiceClient>((provider, client) =>
+        services.AddHttpClient<ICustomerService, CustomerService>((provider, client) =>
         {
             var config = provider.GetRequiredService<IOptions<CustomerServiceConfig>>().Value;
             

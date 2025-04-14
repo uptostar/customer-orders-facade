@@ -9,21 +9,21 @@ namespace CustomerOrders.Services.Order.Client;
 /// Предоставляет методы для получения списка заказов по различным критериям.
 /// </summary>
 /// <remarks>
-/// Этот класс реализует интерфейс <see cref="IOrderServiceClient"/>.
+/// Этот класс реализует интерфейс <see cref="IOrderService"/>.
 /// Он используется для выполнения HTTP-запросов к внешнему API заказов.
 /// </remarks>
-public class OrderServiceClient : IOrderServiceClient
+public class OrderService : IOrderService
 {
     private readonly HttpClient _httpClient;
     
     /// <summary>
-    /// Инициализирует новый экземпляр класса <see cref="OrderServiceClient"/>.
+    /// Инициализирует новый экземпляр класса <see cref="OrderService"/>.
     /// </summary>
     /// <param name="httpClient">
     /// Экземпляр <see cref="HttpClient"/>, который используется для выполнения HTTP-запросов к внешнему API заказов.
     /// Должен быть настроен с базовым адресом и необходимыми заголовками перед передачей в конструктор.
     /// </param>
-    public OrderServiceClient(HttpClient httpClient)
+    public OrderService(HttpClient httpClient)
     {
         _httpClient = httpClient;
     }

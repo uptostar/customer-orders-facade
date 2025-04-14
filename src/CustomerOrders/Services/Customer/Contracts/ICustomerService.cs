@@ -7,7 +7,7 @@ namespace CustomerOrders.Services.Customer.Contracts;
 /// Интерфейс для взаимодействия с сервисом клиентов.
 /// Предоставляет методы для получения информации о клиентах по различным критериям.
 /// </summary>
-public interface ICustomerServiceClient
+public interface ICustomerService
 {
     /// <summary>
     /// Получение информации о клиенте по его идентификатору.
